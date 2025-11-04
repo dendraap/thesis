@@ -1,0 +1,9 @@
+Feature,Correlation
+relative_humidity_2m (%),0.39866666666666667
+temperature_2m (°C),0.35600000000000004
+direct_radiation (W/m²),0.3393333333333333
+wind_speed_10m (km/h),0.31866666666666665
+dew_point_2m (°C),0.29616666666666663
+wind_direction_10m (°),0.18166666666666667
+surface_pressure (hPa),0.09319999999999999
+rain (mm),0.03916666666666666
