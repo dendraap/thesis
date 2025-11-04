@@ -432,5 +432,5 @@ tuning_results = tuning(
     params_grid      = params_grid,
     n_iter           = 5,
     include_encoders = False,
-    save_path = '../reports/nbeats_tuning_results.xlsx'
+    save_path        = '../reports/nbeats_tuning_results.xlsx'
 )
