@@ -7,21 +7,10 @@ from src.forecasting.utils.memory import cleanup
 class PatchedPruningCallback(optuna.integration.PyTorchLightningPruningCallback, Callback):
     pass
 
-class DelayedPruningCallback(PatchedPruningCallback):
-    def on_validation_end(self, trainer, pl_module):
-        # Min epochs to PRUNED
-        if trainer.current_epoch < 5:
-            return
-        super().on_validation_end(trainer, pl_module)
-
-
 def tft_build_w_optuna(
-    Y_train             : TimeSeries,
-    X_past_train        : TimeSeries,
-    X_future_train      : TimeSeries,
-    Y_valid             : TimeSeries,
-    X_past_valid        : TimeSeries,
-    X_future_valid      : TimeSeries,
+    Y                   : TimeSeries,
+    X_past              : TimeSeries,
+    X_future            : TimeSeries,
     input_chunk_length  : int,
     output_chunk_length : int,
     n_epochs            : int,
@@ -31,6 +20,7 @@ def tft_build_w_optuna(
     num_attention_heads : int,
     dropout             : float,
     add_encoders        : dict | None,
+    validation_split    : float,
     model_name          : str,
     work_dir            : str,
     include_stopper     : bool,
@@ -66,11 +56,13 @@ def tft_build_w_optuna(
             TFTModel : This function return the model configuration.
     """
 
+    # Split
+    Y_fit, Y_val               = timeseries_train_test_split(Y, test_size =validation_split)
+    X_past_fit, X_past_val     = timeseries_train_test_split(X_past, test_size=validation_split)
+    X_future_fit, X_future_val = timeseries_train_test_split(X_future, test_size=validation_split)
+
     # Initialize TorchMetrics, used as the monitor
     torch_metrics = MeanAbsolutePercentageError()
-    # torch_metrics = MeanSquaredError(squared=False)
-    # torch_metrics = MeanAbsoluteError()
-    # torch_metrics = MeanSquaredError(squared=True)
 
     # pl_trainer_kwargs setup
     pl_trainer_kwargs = {}
@@ -88,9 +80,7 @@ def tft_build_w_optuna(
     if include_stopper:
         early_stopper = EarlyStopping(
             monitor   = 'val_MeanAbsolutePercentageError', #val_loss
-            # monitor   = 'val_MeanSquaredError', #val_loss
-            # monitor   = 'val_MeanAbsoluteError', #val_loss
-            patience  = 5,
+            patience  = 8,
             min_delta = 0.01,
             mode      = 'min',
             verbose   = True
@@ -104,12 +94,7 @@ def tft_build_w_optuna(
         checkpoint_callback = ModelCheckpoint(
             dirpath    = os.path.join(work_dir, model_name, checkpoints),
             filename   = 'MAPE-best-epoch={epoch}-val_MAPE={val_MeanAbsolutePercentageError:.4f}-val_loss={val_loss:.4f}',
-            # filename   = 'MSE-best-epoch={epoch}-val_MSE={val_MeanSquaredError:.4f}-val_loss={val_loss:.4f}',
-            # filename   = 'MAE-best-epoch={epoch}-val_MAE={val_MeanAbsoluteError:.4f}-val_loss={val_loss:.4f}',
-            # filename   = 'RMSE-best-epoch={epoch}-val_RMSE={val_MeanSquaredError:.4f}-val_loss={val_loss:.4f}',
             monitor    = 'val_MeanAbsolutePercentageError',
-            # monitor    = 'val_MeanSquaredError',
-            # monitor    = 'val_MeanAbsoluteError',
             save_top_k = 1,
             mode       = 'min',
             auto_insert_metric_name = False
@@ -118,10 +103,7 @@ def tft_build_w_optuna(
 
     # Optuna pruning callback
     if use_pruner:
-        pruner = DelayedPruningCallback(trial, monitor='val_MeanAbsolutePercentageError')
-        # pruner = PatchedPruningCallback(trial, monitor='val_MeanSquaredError')
-        # pruner = PatchedPruningCallback(trial, monitor='val_RootMeanSquaredError')
-        # pruner = PatchedPruningCallback(trial, monitor='val_MeanAbsoluteError')
+        pruner = PatchedPruningCallback(trial, monitor='val_MeanAbsolutePercentageError')
         callbacks.append(pruner)
 
     if custom_checkpoint:
@@ -156,12 +138,12 @@ def tft_build_w_optuna(
 
     # Fit model
     model.fit(
-        series                = Y_train,
-        past_covariates       = X_past_train,
-        future_covariates     = X_future_train,
-        val_series            = Y_valid,
-        val_past_covariates   = X_past_valid,
-        val_future_covariates = X_future_valid,
+        series                = Y_fit,
+        past_covariates       = X_past_fit,
+        future_covariates     = X_future_fit,
+        val_series            = Y_val,
+        val_past_covariates   = X_past_val,
+        val_future_covariates = X_future_val,
         load_best             = True,
         stride                = 1,
         dataloader_kwargs     = {'num_workers': num_workers},
@@ -178,9 +160,6 @@ def tft_build_w_optuna(
         print(f'\n📂 Files in checkpoint dir: {ckpt_list}')
 
         pattern_custom  = r"MAPE-best-epoch=(\d+)-val_MAPE=(-?\d+(?:\.\d+)?)-val_loss=(-?\d+(?:\.\d+)?)(?:\.ckpt)?"
-        # pattern_custom  = r"MSE-best-epoch=(\d+)-val_MSE=(-?\d+(?:\.\d+)?)-val_loss=(-?\d+(?:\.\d+)?)(?:\.ckpt)?"
-        # pattern_custom  = r"MAE-best-epoch=(\d+)-val_MAE=(-?\d+(?:\.\d+)?)-val_loss=(-?\d+(?:\.\d+)?)(?:\.ckpt)?"
-        # pattern_custom  = r"RMSE-best-epoch=(\d+)-val_RMSE=(-?\d+(?:\.\d+)?)-val_loss=(-?\d+(?:\.\d+)?)(?:\.ckpt)?"
         pattern_default = r"best-epoch=(\d+)-val_loss=(-?\d+(?:\.\d+)?)(?:\.ckpt)?"
         pattern_last    = r"last-epoch=(\d+)(?:\.ckpt)?"
 

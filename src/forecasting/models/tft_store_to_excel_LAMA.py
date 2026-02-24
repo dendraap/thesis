@@ -6,20 +6,20 @@ def tft_store_to_excel(
     model_name          : str,
     work_dir            : str,
     GPU                 : bool,
-    dataset_type        : str,
+    pre_normalization   : bool,
     input_chunk_length  : int,
     output_chunk_length : int,
     batch_size          : int,
     hidden_size         : int,
     lstm_layers         : int,
     num_attention_heads : int,
+    add_encoders        : dict | None,
     dropout             : float,
     lr                  : float,
     random_state        : int,
     validation_split    : float,
-    Y_col_list          : list,
-    X_col_list          : list,
-    add_encoders        : bool,
+    col_list            : list,
+    col_is_one_hot      : bool,
     custom_checkpoint   : bool,
     status              : str,
     existing_df         : pd.DataFrame,
@@ -75,7 +75,7 @@ def tft_store_to_excel(
         'GPU'                 : True if GPU else False,
         'ram_usage_MB'        : ram_usage_MB,
         'fit_cost_seconds'    : fit_cost_seconds,
-        'dataset_type'        : dataset_type,
+        'pre-normalization'   : pre_normalization,
         'input_chunk_length'  : input_chunk_length,
         'output_chunk_length' : output_chunk_length,
         'n_epochs'            : best_epoch,
@@ -88,15 +88,15 @@ def tft_store_to_excel(
         'random_state'        : random_state,
         'validation_split'    : validation_split,
         'stride'              : output_chunk_length,
-        'Y_col_list'          : Y_col_list,
-        'X_col_list'          : X_col_list,
+        'covariates'          : json.dumps(col_list),
+        'one_hot_encoding'    : col_is_one_hot,
         'add_encoders'        : json.dumps(add_encoders) if add_encoders else None
     }
 
     # EarlyStopping config to store in results
     early_stopping_config = {
         'monitor'  : 'val_MeanAbsolutePercentageError',
-        'patience' : 5,
+        'patience' : 8,
         'min_delta': 0.01,
         'mode'     : 'min'
     }
