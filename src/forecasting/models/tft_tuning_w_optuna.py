@@ -103,20 +103,33 @@ def tft_tuning_w_optuna(
         },
     }
     
-    # Try with 24 output chunk length
-    input_chunk_length  = trial.suggest_categorical('input_chunk_length', [
-        int(PeriodList.D1), int(PeriodList.D1 * 2), int(PeriodList.D1 * 3), int(PeriodList.D1 * 4), int(PeriodList.D1 * 5), int(PeriodList.D1 * 6), int(PeriodList.W1),
-        int(PeriodList.D1 * 8), int(PeriodList.D1 * 9), int(PeriodList.D1 * 10), int(PeriodList.D1 * 11), int(PeriodList.D1 * 12), int(PeriodList.D1 * 13), int(PeriodList.W1 * 2)
-    ])
+    # Try with 12 output chunk length
+    # input_chunk_length  = trial.suggest_categorical('input_chunk_length', [
+    #     int(PeriodList.D1), int(PeriodList.D1 * 2), int(PeriodList.D1 * 3), int(PeriodList.D1 * 4), int(PeriodList.D1 * 5), int(PeriodList.D1 * 6), int(PeriodList.W1),
+    #     int(PeriodList.D1 * 8), int(PeriodList.D1 * 9), int(PeriodList.D1 * 10), int(PeriodList.D1 * 11), int(PeriodList.D1 * 12), int(PeriodList.D1 * 13), int(PeriodList.W1 * 2)
+    # ])
+    # output_chunk_length = trial.suggest_categorical('output_chunk_length', [12])
+    # batch_size          = trial.suggest_categorical('batch_size', [32, 64, 96])
+    # hidden_size         = trial.suggest_categorical('hidden_size', [16, 32, 64, 128])
+    # lstm_layers         = trial.suggest_categorical('lstm_layers', [1, 2, 3])
+    # num_attention_heads = trial.suggest_categorical('num_attention_heads', [2, 4, 8])
+    # dropout             = trial.suggest_categorical('dropout', [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5])
+    # lr                  = trial.suggest_categorical('lr', [0.001, 0.0005, 0.0002, 0.0001, 0.00005, 0.00002, 0.00001])
+    # enc_key             = trial.suggest_categorical('add_encoders', list(encoder_options.keys()))
+    # add_encoders        = encoder_options[enc_key]
+    
+    # For other dataset (search space decreased based on top parameter model on previous dataset)
+    input_chunk_length  = trial.suggest_categorical('input_chunk_length', [72, 96, 120])
     output_chunk_length = trial.suggest_categorical('output_chunk_length', [12])
-    batch_size          = trial.suggest_categorical('batch_size', [32, 64, 96])
-    hidden_size         = trial.suggest_categorical('hidden_size', [16, 32, 64, 128])
-    lstm_layers         = trial.suggest_categorical('lstm_layers', [1, 2, 3])
-    num_attention_heads = trial.suggest_categorical('num_attention_heads', [2, 4, 8])
-    dropout             = trial.suggest_categorical('dropout', [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5])
-    lr                  = trial.suggest_categorical('lr', [0.001, 0.0005, 0.0002, 0.0001, 0.00005, 0.00002, 0.00001])
-    enc_key             = trial.suggest_categorical('add_encoders', list(encoder_options.keys()))
+    batch_size          = trial.suggest_categorical('batch_size', [32, 64])
+    hidden_size         = trial.suggest_categorical('hidden_size', [128])
+    lstm_layers         = trial.suggest_categorical('lstm_layers', [2, 3])
+    num_attention_heads = trial.suggest_categorical('num_attention_heads', [2, 4])
+    dropout             = trial.suggest_categorical('dropout', [0.05, 0.1, 0.15])
+    lr                  = trial.suggest_categorical('lr', [0.001])
+    enc_key             = trial.suggest_categorical('add_encoders', ['enc0', 'enc1'])
     add_encoders        = encoder_options[enc_key]
+
     
     print(
         f'🔃 Tuning TFT with:\n'

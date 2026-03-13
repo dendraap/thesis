@@ -5,7 +5,6 @@ from darts.timeseries import TimeSeries
 from darts.dataprocessing.transformers import Scaler
 from sklearn.preprocessing import MinMaxScaler
 from darts.models import TFTModel, NBEATSModel
-from darts.explainability import TFTExplainer
 from pytorch_lightning.callbacks import Callback, EarlyStopping, ModelCheckpoint
 
 # Tuning
@@ -30,3 +29,6 @@ from sklearn.metrics import (
     root_mean_squared_error,
     mean_absolute_percentage_error
 )
+
+# Interpretability
+from darts.explainability import TFTExplainer

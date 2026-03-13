@@ -163,3 +163,96 @@ def nbeats_store_to_excel(
     # Clean up memory
     cleanup(df_results)
     return None
+
+
+def nbeats_inference_store_to_excel(
+    valid_MAPE_sum      : float,
+    MAE_sum             : float,
+    MAPE_sum            : float,
+    MSE_sum             : float,
+    RMSE_sum            : float,
+    dataset_type        : str,
+    n_predict           : int,
+    model_name          : str,
+    GPU                 : bool,
+    fit_cost_seconds    : float,
+    predict_cost_seconds: float,
+    valid_mape_results  : dict,
+    mae_results         : dict,
+    mape_results        : dict,
+    mse_results         : dict,
+    rmse_results        : dict,
+    input_chunk_length  : int,
+    output_chunk_length : int,
+    n_epochs            : int,
+    batch_size          : int,
+    num_stacks          : int,
+    num_blocks          : int,
+    num_layers          : int,
+    layer_widths        : int,
+    dropout             : float,
+    lr                  : float,
+    random_state        : int,
+    validation_split    : float,
+    stride              : int,
+    Y_col_list          : list,
+    X_col_list          : list,
+    add_encoders        : dict | bool,
+    work_dir            : str,
+    existing_df         : pd.DataFrame,
+    save_path           : str,
+) -> None:
+    
+    # Store pruned params to xlsx
+    params_record = {
+        'input_chunk_length'  : input_chunk_length,
+        'output_chunk_length' : output_chunk_length,
+        'n_epochs'            : n_epochs,
+        'batch_size'          : batch_size,
+        'num_stacks'          : num_stacks,
+        'num_blocks'          : num_blocks,
+        'num_layers'          : num_layers,
+        'layer_widths'        : layer_widths,
+        'dropout'             : dropout,
+        'lr'                  : lr,
+        'random_state'        : random_state,
+        'validation_split'    : validation_split,
+        'stride'              : stride,
+        'Y_col_list'          : Y_col_list,
+        'X_col_list'          : X_col_list,
+        'add_encoders'        : json.dumps(add_encoders) if add_encoders else None
+    }
+
+    # Initialize result
+    df_results = pd.DataFrame([{
+        'timestamp'           : datetime.now(),
+        'valid_MAPE_sum'      : valid_MAPE_sum,
+        'MAE_sum'             : MAE_sum,
+        'MAPE_sum'            : MAPE_sum,
+        'MSE_sum'             : MSE_sum,
+        'RMSE_sum'            : RMSE_sum,
+        'dataset_type'        : dataset_type,
+        'n_predict'           : n_predict,
+        'model_name'          : model_name,
+        'GPU'                 : GPU,
+        'fit_cost_seconds'    : fit_cost_seconds,
+        'predict_cost_seconds': predict_cost_seconds,
+        **valid_mape_results,
+        **mae_results,
+        **mape_results,
+        **mse_results,
+        **rmse_results,
+        **params_record,
+    }])
+        
+    # Store results to existing record
+    df_results = pd.concat([existing_df, df_results], ignore_index=True)
+
+    # Save path optionally
+    if save_path:
+        df_results.to_excel(save_path, index=False)
+        print(f'✅ Results saved to {save_path}\n')
+        
+    # Clean up memory
+    cleanup(df_results)
+    return None

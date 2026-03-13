@@ -56,7 +56,8 @@ if __name__ == "__main__":
     dataset_type = None
     prenorm_type = None
 
-    df_actual    = pd.read_csv('data/processed/past_covariates_noOutliers_5.csv').drop(columns=['x1','x2','x3','x4_zero', 'x4_nonzero','x5','x6','x7_sin', 'x7_cos','x8_zero', 'x8_nonzero'])
+    df_actual    = pd.read_csv('data/processed/past_covariates_noOutliers_5.csv').drop(
+        columns=['x1','x2','x3','x4_zero', 'x4_nonzero','x5','x6','x7_sin', 'x7_cos','x8_zero', 'x8_nonzero'])
     
     if dataset_used == 1:
         dataset_type = 'sqrt'
@@ -66,7 +67,6 @@ if __name__ == "__main__":
     elif dataset_used == 2:
         dataset_type = 'sqrt_NoOzon_5'
         prenorm_type = 'sqrt'
-        # df_past = pd.read_csv('data/processed/past_covariates_sqrt_transform_NoOzon.csv')
         df_past = pd.read_csv('data/processed/past_covariates_sqrt_transform_NoOzon_5.csv')
 
         # Drop y6
@@ -86,17 +86,26 @@ if __name__ == "__main__":
         df_actual = df_actual.drop(columns=['y6'])
 
     elif dataset_used == 5:
+        dataset_type = 'log1p_NoOzon_5'
+        prenorm_type = 'log1p'
+        df_past = pd.read_csv('data/processed/past_covariates_log_transform_NoOzon_5.csv')
+
+        # Drop y6
+        df_actual = df_actual.drop(columns=['y6'])
+
+    elif dataset_used == 6:
         dataset_type = 'no_outliers'
         prenorm_type = None
         df_past = pd.read_csv('data/processed/past_covariates_noOutliers.csv')
 
-    elif dataset_used == 6:
-        dataset_type = 'no_outliers_noOzon'
+    elif dataset_used == 7:
+        dataset_type = 'no_outliers_noOzon_5'
         prenorm_type = None
-        df_past = pd.read_csv('data/processed/past_covariates_noOutliers_NoOzon.csv')
+        df_past = pd.read_csv('data/processed/past_covariates_noOutliers_NoOzon_5.csv')
 
         # Drop y6
         df_actual = df_actual.drop(columns=['y6'])
+        
     else:
         dataset_type = 'default'
         prenorm_type = None
@@ -150,7 +159,7 @@ if __name__ == "__main__":
 
     # Split to data train and test
     ## ======= CHANGE NUMBER BELOW FOR CHOOSE DATA SPLIT SIZE ======= ##
-    valid_size = 0.1
+    valid_size = 0.2
     test_size  = 0.1
     ## ======= CHANGE NUMBER ABOVE FOR CHOOSE DATA SPLIT SIZE ======= ##
 
@@ -230,6 +239,6 @@ if __name__ == "__main__":
             work_dir         = work_dir,
             trial            = trial
         ), 
-        n_trials=4000, 
+        n_trials=2000, 
         callbacks=[print_callback]
     )
