@@ -9,11 +9,14 @@ env_3012010008/
 env_skripsi/
 
 # Keep .gitkeep to stay push upper folder
+!models/best_model/.gitkeep
+!models/chekpoint_inference_nbeats/.gitkeep
+!models/checkpoint_inference_tft/.gitkeep
 !models/checkpoint_tuning_nbeats/.gitkeep
 !models/checkpoint_tuning_nbeats2/.gitkeep
 !models/checkpoint_tuning_tft/.gitkeep
+!models/checkpoint_tuning_tft2/.gitkeep
 !models/trial_and_error/.gitkeep
-!models/best_model/.gitkeep
 
 # Ignore checkpoint model
 *.ckpt
