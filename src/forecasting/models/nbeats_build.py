@@ -59,7 +59,7 @@ def nbeats_build(
         num_workers                      = 0
 
     # reproducibility
-    torch.manual_seed(42)
+    torch.manual_seed(1502)
 
     # Initialize model
     model = NBEATSModel(
@@ -79,7 +79,7 @@ def nbeats_build(
         model_name          = model_name,
         work_dir            = work_dir,
         log_tensorboard     = False,
-        save_checkpoints    = False,   # Enable Darts default checkpoint (_model.pth.tar)
+        save_checkpoints    = True,   # Enable Darts default checkpoint (_model.pth.tar)
         add_encoders        = add_encoders
     )
 
@@ -90,8 +90,11 @@ def nbeats_build(
         val_series            = Y_valid,
         val_past_covariates   = X_valid,
         stride                = 1,
-        dataloader_kwargs     = {'num_workers': num_workers},
+        dataloader_kwargs     = {'num_workers': 1},
     )
+
+    # Save model
+    model.save(os.path.join(work_dir, f"{model_name}_final.pth"))
         
     # Cleanup memory
     cleanup(add_encoders)
