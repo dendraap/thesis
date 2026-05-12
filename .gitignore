@@ -7,6 +7,8 @@ models/trial_and_error/*
 models/best_model/*
 env_3012010008/
 env_skripsi/
+best_model.tar.gz
+models/best_model.tar.gz
 
 # Keep .gitkeep to stay push upper folder
 !models/best_model/.gitkeep
