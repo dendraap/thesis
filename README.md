@@ -88,6 +88,89 @@
 └─ requirements_3012010008.txt                                  <- The requirements library for this project.
 ```
 
-## Laporan Progress
+## Installation
 
-### 
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/dendraap/undergraduate-thesis.git
+cd undergraduate-thesis
+```
+
+### 2. Create a Python Virtual Environment
+
+Create a virtual environment to isolate the project dependencies.
+
+#### Windows (Command Prompt)
+
+```cmd
+python -m venv contoh_env
+```
+
+#### Linux / macOS
+
+```bash
+python3 -m venv contoh_env
+```
+
+### 3. Activate the Virtual Environment
+
+#### Windows (Command Prompt)
+
+```cmd
+contoh_env\Scripts\activate
+```
+
+#### Linux / macOS
+
+```bash
+source contoh_env/bin/activate
+```
+
+After activation, your terminal prompt should look similar to:
+
+```text
+(contoh_env) C:\Users\username\undergraduate-thesis>
+```
+
+or
+
+```text
+(contoh_env) user@hostname:~/undergraduate-thesis$
+```
+
+### 4. Upgrade pip (Recommended)
+
+```bash
+python -m pip install --upgrade pip
+```
+
+### 5. Install the Required Packages
+
+Install all project dependencies using the provided requirements file.
+
+```bash
+pip install -r requirements_3012010008.txt
+```
+
+### 6. Register the Environment as a Jupyter Kernel (Optional)
+
+If you plan to use Jupyter Notebook or JupyterLab, register the virtual environment as a kernel.
+
+```bash
+python -m ipykernel install --user --name=contoh_env --display-name="Python (contoh_env)"
+```
+
+### 7. Launch JupyterLab
+
+```bash
+jupyter lab
+```
+
+### 8. Deactivate the Virtual Environment
+
+When you have finished working on the project:
+
+```bash
+deactivate
+```
